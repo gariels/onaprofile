@@ -1,0 +1,27 @@
+pkgname=onaprofile
+pkgver=0.2.2
+pkgrel=1
+pkgdesc="Qt4 GUI for running program with mounted profile."
+arch=('i686' 'x86_64')
+makedepends=('cmake>=2.6.0' 'git')
+depends=('qt4' 'qjson')
+
+build()
+{
+    cd "${srcdir}"
+    msg "Creating files for build ..."
+
+    rm -rf "${srcdir}/build"
+    mkdir -p "${srcdir}/build"
+    cd "${srcdir}/build"
+
+    cmake "${srcdir}/../../.." -DCMAKE_INSTALL_PREFIX="/usr" \
+                               -DCMAKE_CXX_FLAGS="-DNDEBUG"  \
+                               -DCMAKE_BUILD_TYPE=Release
+
+    msg "Building ..."
+    make
+
+    msg "Creating package ..."
+    make DESTDIR="${pkgdir}" install 
+}

@@ -7,7 +7,8 @@ A Qt4 GUI for running program with mounted session.
 Requirements
 ------------
 
- * Qt4
+ * qt4
+ * qjson
  * cmake
 
 

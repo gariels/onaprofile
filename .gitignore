@@ -1,1 +1,2 @@
 build/*
+misc/archlinux/{pkg,src}/*
