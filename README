@@ -1,0 +1,137 @@
+onaprofile
+==========
+
+A Qt4 GUI for running program with mounted session.
+
+
+Requirements
+------------
+
+ * Qt4
+ * cmake
+
+
+Building
+--------
+::
+    $ mkdir build
+    $ cmake ../
+    $ make
+
+
+Usage
+-----
+::
+    $ onaprofile --config profilesfile
+
+
+About Profiles File
+-------------------
+
+ * a JSON-encoded file.
+ * see SAMPLECONFIG for example.
+
+
+Example
+-------
+Let's say you have an cryptmount target named "mysecretff" that you want to use
+as storage for your *private* Firefox profile. This is what the
+/etc/cryptmount/cmtab should looks like::
+
+    mysecretff {
+        # this is the container file
+        dev=/home/yourname/SECRET.fs
+
+        # this is where you mount the secret filesystem
+        dir=/home/yourname/.mozilla/firefox/cryptedffprofile
+
+        # this is important, without this the onaprofile wont be able to mount
+        # the target (info: -p is to tell fsck to automatically repair errors)
+        fsckoptions=-p
+        fstype=ext3
+        ...
+    }
+
+Prepare your new private profile by mounting "mysecretff" for the first time
+using cryptmount and optionally copy your existing profile to it, eg.::
+
+    $ cp -a ~/.mozilla/firefox/0ekx7hji.default/* ~/.mozilla/firefox/cryptedffprofile
+
+NOTE: Of course, the "0ekx7hji.default" directory is an automatically created
+      and randomly named profile when Firefox run for the first time, if you
+      see such directory under ~/.mozilla/firefox then it might be your Firefox
+      profile.
+
+Knowing this, you write a file at ~/.onaprofile/mzfirefox like::
+
+    {    "title": "Mozilla Firefox",
+        "exec": "firefox -profile $path",
+        "profiles": {
+            "Encrypted": {
+                "path": "/dev/null",
+                "type": "cryptmount",
+                "typedata": { "target": "mysecretff" }
+            },
+            "Standard Firefox": {
+                "path": "$HOME/.mozilla/firefox/0ekx7hji.default",
+                "type": "directory"
+            }
+        }
+    }
+
+where the `target` key of `typedata` is the name of cryptmount target
+(ie. mysecretff) for your private Firefox profile. The `profile` is the
+path to non-private Firefox profile.
+
+At this point, you can optionally unmount "mysecretff" so that onaprofile can
+do the "mounting" thing for you by running::
+
+    $ cryptmount -u mysecretff
+
+Finally, you can now start onaprofile by running::
+
+    $ onaprofile --config ~/.onaprofile/mzfirefox
+
+and you will be given selection to start using your private profile or your
+usual profile.
+
+
+Troubleshooting
+---------------
+
+Problem
+~~~~~~~
+
+    You can mount cryptmount targets just fine but onaprofile wont run
+    on unmounted cryptmount profile.
+
+Solution
+~~~~~~~~
+    Add "fsckoptions=-p" to your target configuration
+    (see /etc/cryptmount/tab) so that fsck automatically repair error when
+    cryptmount mounts the encrypted partition. For example::
+
+        privatechrome {
+            ...
+
+            dev=/home/tukul/privatechrome.fs
+            # set auto-repair partition ("-p", see man fsck.ext3)
+            fsckoptions=-p
+            fstype=ext3
+
+            ...
+        }
+
+Explanation
+~~~~~~~~~~~
+    This "auto-repair" needed because when cryptmount mounts a partition
+    the system runs some diagnostic checks on it for any error, this job is
+    given to fsck that requires interactive environment to do repairs.
+
+    Since onaprofile is basically a GUI on top of cryptmount, it do what
+    you are supposed to do manually (ie. mounting and starting browsers on
+    the partition you just mounted) so it doesn't provide interactive
+    terminal environment when mounting.
+
+    The auto-repair skip the interactive requirements by saying something
+    like "just fix any error please I dont want to be bothered" to fsck.

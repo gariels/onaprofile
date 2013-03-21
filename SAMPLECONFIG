@@ -1,0 +1,14 @@
+{   "title": "Chromium",
+    "exec": "chromium --user-data-dir=$path",
+    "profiles": {
+        "Encrypted Chromium": {
+            "path": "/dev/null",
+            "type": "cryptmount",
+            "typedata": { "target": "sampletarget" }
+        },
+        "Normal Chromium": {
+            "path": "/home/foo/.config/chromium/stdchromium",
+            "type": "directory"
+        }
+    }
+}
