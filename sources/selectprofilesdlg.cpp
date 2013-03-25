@@ -1,4 +1,6 @@
 #include <iostream>
+#include <unistd.h>
+#include <stdint.h>
 
 #include "selectprofilesdlg.hpp"
 
@@ -8,8 +10,6 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QWidget>
 #include <qjson/parser.h>
-
-#include <stdint.h>
 
 
 CSelectProfilesDlg::CSelectProfilesDlg(QWidget* parent, Qt::WindowFlags flags):
@@ -64,6 +64,7 @@ bool CSelectProfilesDlg::launchProfile(Profile* prof)
         ctxptr = &runctx;
     }
 
+    std::cout << "Running profile \"" << prof->name().toStdString() << "\" ..." << std::endl;
     return prof->run(ctxptr);
 }
 
@@ -128,7 +129,7 @@ void CSelectProfilesDlg::on_launchclicked(bool down)
 
     Profile* profile = static_cast< Profile* >(ptr);
     if (launchProfile(profile))
-        accept();
+        close();
 }
 
 void CSelectProfilesDlg::on_launchprofile(const QModelIndex& index)
@@ -228,7 +229,7 @@ void CSelectProfilesDlg::setupUi(QDialog* dlg)
     Ui::SelectProfilesDlg::setupUi(dlg);
 
     setWindowTitle(trUtf8("On A Profile"));
-    setWindowIcon(QIcon("://profile.png"));
+    setWindowIcon(QIcon("://onaprofile.png"));
 
     QListWidget* listw = this->findChild< QListWidget* >("profilesListWidget");
     listw->setUniformItemSizes(false);

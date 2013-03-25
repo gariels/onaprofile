@@ -21,8 +21,7 @@ bool DirectoryProfile::run(const void* runctx)
     if (excmd.indexOf("$path") != -1)
         excmd.replace("$path", m_profiledir);
 
-    QProcess proc;
-    return proc.startDetached(excmd);
+    return QProcess::startDetached(excmd);
 }
 
 
@@ -169,7 +168,7 @@ int CryptMountProfile::mount(const void* mntctx)
 {
     CryptMountProfileMountContext* mntctx_ = (CryptMountProfileMountContext*)mntctx;
 
-    while (mntctx_ && true)
+    while (mntctx_)
     {
         QWidget* parent = mntctx_->parentWidget;
 
@@ -188,7 +187,7 @@ int CryptMountProfile::mount(const void* mntctx)
             return mountcode;
         else if (mountcode == -1)
         {
-            // inform user, password is invalid
+            // inform user, password is invalid, stay in the loop
             QMessageBox::information(parent, parent->trUtf8("Password"),
                                      parent->trUtf8("Wrong password entered."));
         }
@@ -205,7 +204,7 @@ bool CryptMountProfile::run(const void* runctx)
 {
     bool prepok = true;
     CryptMountProfileRunContext* runctx_ = (CryptMountProfileRunContext*)runctx;
-    if (runctx_ && runctx_->mountFirst)
+    if (runctx_ && runctx_->mountFirst && !isMounted())
     {
         CryptMountProfileMountContext mntctx;
         mntctx.parentWidget = runctx_->parentWidget;
