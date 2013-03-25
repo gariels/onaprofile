@@ -1,2 +1,4 @@
 build/*
-misc/archlinux/{pkg,src}/*
+misc/archlinux/*.tar.*
+misc/archlinux/pkg
+misc/archlinux/src

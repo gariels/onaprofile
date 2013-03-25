@@ -97,20 +97,19 @@ and you will be given selection to start using your private profile or your
 usual profile.
 
 
-Troubleshooting
----------------
+Known Problems
+--------------
 
-Problem
-~~~~~~~
+a. You can mount cryptmount targets just fine but onaprofile wont run
+   on unmounted cryptmount profile.
 
-    You can mount cryptmount targets just fine but onaprofile wont run
-    on unmounted cryptmount profile.
 
-Solution
-~~~~~~~~
-    Add "fsckoptions=-p" to your target configuration
-    (see /etc/cryptmount/tab) so that fsck automatically repair error when
-    cryptmount mounts the encrypted partition. For example::
+   Solution
+   ~~~~~~~~
+
+   Add "fsckoptions=-p" to your target configuration
+   (see /etc/cryptmount/tab) so that fsck automatically repair error when
+   cryptmount mounts the encrypted partition. For example::
 
         privatechrome {
             ...
@@ -123,16 +122,18 @@ Solution
             ...
         }
 
-Explanation
-~~~~~~~~~~~
-    This "auto-repair" needed because when cryptmount mounts a partition
-    the system runs some diagnostic checks on it for any error, this job is
-    given to fsck that requires interactive environment to do repairs.
 
-    Since onaprofile is basically a GUI on top of cryptmount, it do what
-    you are supposed to do manually (ie. mounting and starting browsers on
-    the partition you just mounted) so it doesn't provide interactive
-    terminal environment when mounting.
+   Explanation
+   ~~~~~~~~~~~
 
-    The auto-repair skip the interactive requirements by saying something
-    like "just fix any error please I dont want to be bothered" to fsck.
+   This "auto-repair" needed because when cryptmount mounts a partition
+   the system runs some diagnostic checks on it for any error, this job is
+   given to fsck that requires interactive environment to do repairs.
+
+   Since onaprofile is basically a GUI on top of cryptmount, it do what
+   you are supposed to do manually (ie. mounting and starting browsers on
+   the partition you just mounted) so it doesn't provide interactive
+   terminal environment when mounting.
+
+   The auto-repair skip the interactive requirements by saying something
+   like "just fix any error please I dont want to be bothered" to fsck.
